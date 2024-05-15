@@ -1,6 +1,6 @@
 USE projetos
 
---ExercÌcio 1
+--Exerc√≠cio 1
 
 SELECT id, nome, email, nomeusuario,
 	senha = CASE(senha)
@@ -11,46 +11,39 @@ SELECT id, nome, email, nomeusuario,
 		END
 FROM users
 
---ExercÌcio 2
-
+--Exerc√≠cio 2
+-- Ramon: DATEADD espera retorno numerico para especificar a quantidade de tempo a ser adicionada √† data e n√£o precisa da compara√ß√£o no Case
 SELECT nome, descricao, dataproj,
-	data_final = CASE(id)
-		WHEN 10001 THEN
-			DATEADD(DAY, 15, dataproj)
-		ELSE
-			NULL
-		END
+       CASE id
+           WHEN 10001 THEN DATE_ADD(dataproj, INTERVAL 15 DAY)
+           ELSE NULL
+       END AS data_final
 FROM projects
 WHERE id IN (
-	SELECT projects_id
-	FROM user_has_projects
-	WHERE users_id IN(
-		SELECT id 
-		FROM users
-		WHERE email = 'aparecido@empresa.com'
-		)
-		)
+    SELECT projects_id
+    FROM user_has_projects
+    WHERE users_id IN (
+        SELECT id 
+        FROM users
+        WHERE email = 'aparecido@empresa.com'
+    )
+);
 
---ExercÌcio 3
+--Exerc√≠cio 3
+-- Ramon: S√≥ melhorei com o Join
 
-SELECT nome, email 
-FROM users
-WHERE id IN(
-	SELECT users_id 
-	FROM user_has_projects
-	WHERE projects_id IN(
-		SELECT id 
-		FROM projects
-		WHERE nome = 'Auditoria'
-		)
-		)
-		
---ExercÌcio 4
+SELECT u.nome, u.email 
+FROM users u
+JOIN user_has_projects up ON u.id = up.users_id
+JOIN projects p ON up.projects_id = p.id
+WHERE p.nome = 'Auditoria';
 
+--Exerc√≠cio 4
+-- Ramon: 
 SELECT nome, descricao, dataproj,
-	data_final = '16/09/2014',
-	custo_total = (79.85 * DATEDIFF(DAY, dataproj, '2014-09-16'))
+       '2014-09-16' AS data_final,
+       (79.85 * DATEDIFF('2014-09-16', dataproj)) AS custo_total
 FROM projects
-WHERE nome LIKE '%ManutenÁ„o%'
+WHERE nome LIKE '%Manuten√ß√£o%';
 
 
